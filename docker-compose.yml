@@ -1,0 +1,80 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_cms
+    environment:
+      MYSQL_ROOT_PASSWORD: dbpasscms
+      MYSQL_DATABASE: course_management_system
+    networks:
+      - cms-network
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mongodb:  
+    image: mongo:latest
+    container_name: mongodb_cms
+    networks:
+      - cms-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j_cms
+    environment:
+      NEO4J_AUTH: neo4j/dbpasscms
+    networks:
+      - cms-network
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/var/lib/neo4j
+
+  redis:
+    image: redis:latest
+    container_name: redis_cms
+    networks:
+      - cms-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra_cms
+    environment:
+      CASSANDRA_CLUSTER_NAME: "cms_cluster"
+      CASSANDRA_LISTEN_ADDRESS: "cassandra"
+      CASSANDRA_RPC_ADDRESS: "0.0.0.0"
+      CASSANDRA_BROADCAST_ADDRESS: "cassandra"
+    networks:
+      - cms-network
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+
+networks:
+  cms-network:
+    name: cms-network
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  mongodb-data:
+    driver: local
+  neo4j-data:
+    driver: local
+  redis-data:
+    driver: local
+  cassandra-data:
+    driver: local
